@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema de Registro de Detenidos - GitHub Pages</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans antialiased min-h-screen py-8 px-4">
+  
+  <div class="max-w-5xl mx-auto space-y-6">
+    
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl flex flex-col md:flex-row justify-between items-center gap-4">
+      <div class="flex items-center gap-4">
+        <div class="bg-blue-600/20 p-3 rounded-xl border border-blue-500/30 text-blue-400">
+          <i class="fa-solid fa-shield-halved text-3xl"></i>
+        </div>
+        <div>
+          <h1 class="text-2xl font-bold tracking-tight text-white">Central de Captura de Detenciones</h1>
+          <p class="text-slate-400 text-sm">Desplegado en GitHub Pages y conectado a Google Sheets</p>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-3">
+        <div class="bg-slate-800/80 border border-slate-700 px-4 py-2 rounded-xl text-center">
+          <span class="block text-xs text-slate-400 uppercase font-semibold">Sistema</span>
+          <span class="inline-flex items-center gap-1.5 text-emerald-400 text-sm font-medium">
+            <span class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span> En Línea
+          </span>
+        </div>
+        <button type="button" onclick="resetearFormulario()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-2.5 rounded-xl border border-slate-700 text-sm font-medium transition flex items-center gap-2">
+          <i class="fa-solid fa-rotate-right"></i> Limpiar
+        </button>
+      </div>
+    </div>
+
+    <form id="registroForm" onsubmit="enviarDatos(event)" class="space-y-4">
+      
+      <!-- SECCIÓN 1: MOTIVO Y DATOS DE DETENCIÓN -->
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl shadow-xl overflow-hidden">
+        <button type="button" onclick="toggleSeccion('sec-1')" class="w-full p-5 flex justify-between items-center bg-slate-900 hover:bg-slate-800/60 transition text-left">
+          <span class="text-base font-semibold text-blue-400 flex items-center gap-2.5">
+            <i class="fa-solid fa-file-shield text-lg"></i> 1. Motivo y Datos de la Detención
+          </span>
+          <i id="icon-sec-1" class="fa-solid fa-chevron-down text-slate-400 transition-transform duration-300 rotate-180"></i>
+        </button>
+        <div id="sec-1" class="p-6 pt-0 border-t border-slate-800/60 grid grid-cols-1 md:grid-cols-4 gap-4 mt-4">
+          <div class="md:col-span-2">
+            <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Motivo de Detención / Delito *</label>
+            <select id="motivoDetencionSelect" onchange="gestionarOtroDelito()" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white text-sm focus:outline-none focus:border-blue-500">
+              <option value="" disabled selected>-- Seleccione el Motivo o Delito --</option>
+              <option value="DELITOS CONTRA LA SALUD">DELITOS CONTRA LA SALUD</option>
+              <option value="ROBO A COMERCIO">ROBO A COMERCIO</option>
+              <option value="ROBO A CASA HABITACIÓN">ROBO A CASA HABITACIÓN</option>
+              <option value="ROBO DE VEHICULO">ROBO DE VEHÍCULO</option>
+              <option value="ROBO VIOLENTO DE VEHICULO">ROBO VIOLENTO DE VEHÍCULO</option>
+              <option value="ROBO A PERSONA">ROBO A PERSONA</option>
+              <option value="ROBO A EMPRESA">ROBO A EMPRESA</option>
+              <option value="ROBO SIMPLE">ROBO SIMPLE</option>
+              <option value="EQUIPARABLE AL ROBO DE VEHICULO">EQUIPARABLE AL ROBO DE VEHÍCULO</option>
+              <option value="ALLANAMIENTO DE MORADA">ALLANAMIENTO DE MORADA</option>
+              <option value="DESACATO ORDEN LEGITIMA">DESACATO ORDEN LEGÍTIMA</option>
+              <option value="AMENAZAS">AMENAZAS</option>
+              <option value="ATAQUE CONTRA INSTITUCIONES PÚBLICAS">ATAQUE CONTRA INSTITUCIONES PÚBLICAS</option>
+              <option value="CORRUPCIÓN DE MENORES">CORRUPCIÓN DE MENORES</option>
+              <option value="OTRO">OTRO (Especificar...)</option>
+            </select>
+            <input type="text" id="motivoDetencionOtro" placeholder="Escriba el motivo..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white text-sm focus:outline-none focus:border-blue-500 mt-2 hidden">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Folio *</label>
+            <input type="text" id="folio" placeholder="Ej. 251307653" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white text-sm focus:outline-none focus:border-blue-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Correo Electrónico</label>
+            <input type="email" id="email" placeholder="oficial@autoridad.gob" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white text-sm focus:outline-none focus:border-blue-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Fecha de Detención *</label>
+            <input type="date" id="fechaDetencion" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white text-sm focus:outline-none focus:border-blue-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Hora de Detención *</label>
+            <input type="time" id="horaDetencion" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white text-sm focus:outline-none focus:border-blue-500">
+          </div>
+          <div class="md:col-span-2">
+            <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Lugar de la Detención *</label>
+            <input type="text" id="lugarDetencion" placeholder="Calle, cruce o referencias exactas..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white text-sm focus:outline-none focus:border-blue-500">
+          </div>
+        </div>
+      </div>
+
+      <!-- SECCIÓN 2: IDENTIFICACIÓN PERSONAL -->
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl shadow-xl overflow-hidden">
+        <button type="button" onclick="toggleSeccion('sec-2')" class="w-full p-5 flex justify-between items-center bg-slate-900 hover:bg-slate-800/60 transition text-left">
+          <span class="text-base font-semibold text-blue-400 flex items-center gap-2.5">
+            <i class="fa-solid fa-user-injured text-lg"></i> 2. Identificación Personal
+          </span>
+          <i id="icon-sec-2" class="fa-solid fa-chevron-down text-slate-400 transition-transform duration-300"></i>
+        </button>
+        <div id="sec-2" class="p-6 pt-0 border-t border-slate-800/60 grid grid-cols-1 md:grid-cols-4 gap-4 mt-4 hidden">
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Nombre(s) *</label>
+            <input type="text" id="nombre" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white text-sm focus:outline-none focus:border-blue-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Apellido Paterno *</label>
+            <input type="text" id="apellidoPaterno" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white text-sm focus:outline-none focus:border-blue-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Apellido Materno</label>
+            <input type="text" id="apellidoMaterno" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white text-sm focus:outline-none focus:border-blue-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Alias</label>
+            <input type="text" id="alias" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white text-sm focus:outline-none focus:border-blue-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Fecha de Nacimiento</label>
+            <input type="date" id="fechaNacimiento" onchange="calcularEdad()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white text-sm focus:outline-none focus:border-blue-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Edad</label>
+            <input type="text" id="edad" placeholder="Automática" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2.5 text-emerald-400 font-semibold text-sm focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">CURP</label>
+            <input type="text" id="curp" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white text-sm focus:outline-none focus:border-blue-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Estado Civil</label>
+            <select id="estadoCivil" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white text-sm focus:outline-none focus:border-blue-500">
+              <option value="SOLTERO">SOLTERO</option>
+              <option value="CASADO">CASADO</option>
+              <option value="UNION LIBRE">UNIÓN LIBRE</option>
+              <option value="DIVORCIADO">DIVORCIADO</option>
+              <option value="VIUDO">VIUDO</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Ocupación</label>
+            <input type="text" id="ocupacion" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white text-sm focus:outline-none focus:border-blue-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Grado de Estudios</label>
+            <select id="gradoEstudios" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white text-sm focus:outline-none focus:border-blue-500">
+              <option value="">-- SELECCIONE --</option>
+              <option value="NINGUNO">NINGUNO</option>
+              <option value="PRIMARIA">PRIMARIA</option>
+              <option value="SECUNDARIA">SECUNDARIA</option>
+              <option value="PREPARATORIA">PREPARATORIA</option>
+              <option value="LICENCIATURA">LICENCIATURA</option>
+              <option value="POSTGRADO">POSTGRADO</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Originario de</label>
+            <input type="text" id="originario" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white text-sm focus:outline-none focus:border-blue-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Teléfono</label>
+            <input type="text" id="telefono" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white text-sm focus:outline-none focus:border-blue-500">
+          </div>
+        </div>
+      </div>
+
+      <!-- SECCIÓN 3: DOMICILIO Y UBICACIÓN -->
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl shadow-xl overflow-hidden">
+        <button type="button" onclick="toggleSeccion('sec-3')" class="w-full p-5 flex justify-between items-center bg-slate-900 hover:bg-slate-800/60 transition text-left">
+          <span class="text-base font-semibold text-blue-400 flex items-center gap-2.5">
+            <i class="fa-solid fa-map-location-dot text-lg"></i> 3. Domicilio y Ubicación
+          </span>
+          <i id="icon-sec-3" class="fa-solid fa-chevron-down text-slate-400 transition-transform duration-300"></i>
+        </button>
+        <div id="sec-3" class="p-6 pt-0 border-t border-slate-800/60 grid grid-cols-1 md:grid-cols-4 gap-4 mt-4 hidden">
+          <div class="md:col-span-2">
+            <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Calle</label>
+            <input type="text" id="calle" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white text-sm focus:outline-none focus:border-blue-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Número</label>
+            <input type="text" id="numero" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white text-sm focus:outline-none focus:border-blue-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Entre Calle</label>
+            <input type="text" id="entreCalle" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white text-sm focus:outline-none focus:border-blue-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Colonia</label>
+            <input type="text" id="colonia" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white text-sm focus:outline-none focus:border-blue-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Estado</label>
+            <select id="estado" onchange="actualizarMunicipios()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white text-sm focus:outline-none focus:border-blue-500">
+              <option value="AGUASCALIENTES">AGUASCALIENTES</option>
+              <option value="BAJA CALIFORNIA">BAJA CALIFORNIA</option>
+              <option value="BAJA CALIFORNIA SUR">BAJA CALIFORNIA SUR</option>
+              <option value="CAMPECHE">CAMPECHE</option>
+              <option value="CHIAPAS">CHIAPAS</option>
+              <option value="CHIHUAHUA">CHIHUAHUA</option>
+              <option value="CIUDAD DE MEXICO">CIUDAD DE MÉXICO</option>
+              <option value="COAHUILA">COAHUILA</option>
+              <option value="COLIMA">COLIMA</option>
+              <option value="DURANGO">DURANGO</option>
+              <option value="ESTADO DE MEXICO">ESTADO DE MÉXICO</option>
+              <option value="GUANAJUATO">GUANAJUATO</option>
+              <option value="GUERRERO">GUERRERO</option>
+              <option value="HIDALGO">HIDALGO</option>
+              <option value="JALISCO">JALISCO</option>
+              <option value="MICHOACAN">MICHOACÁN</option>
+              <option value="MORELOS">MORELOS</option>
+              <option value="NAYARIT">NAYARIT</option>
+              <option value="NUEVO LEON" selected>NUEVO LEÓN</option>
+              <option value="OAXACA">OAXACA</option>
+              <option value="PUEBLA">PUEBLA</option>
+              <option value="QUERETARO">QUERÉTARO</option>
+              <option value="QUINTANA ROO">QUINTANA ROO</option>
+              <option value="SAN LUIS POTOSI">SAN LUIS POTOSÍ</option>
+              <option value="SINALOA">SINALOA</option>
+              <option value="SONORA">SONORA</option>
+              <option value="TABASCO">TABASCO</option>
+              <option value="TAMAULIPAS">TAMAULIPAS</option>
+              <option value="TLAXCALA">TLAXCALA</option>
+              <option value="VERACRUZ">VERACRUZ</option>
+              <option value="YUCATAN">YUCATÁN</option>
+              <option value="ZACATECAS">ZACATECAS</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Municipio / Alcaldía</label>
+            <select id="municipio" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white text-sm focus:outline-none focus:border-blue-500"></select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Código Postal</label>
+            <input type="text" id="codigoPostal" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white text-sm focus:outline-none focus:border-blue-500">
+          </div>
+        </div>
+      </div>
+
+      <!-- SECCIÓN 4: REFERENCIAS FAMILIARES -->
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl shadow-xl overflow-hidden">
+        <button type="button" onclick="toggleSeccion('sec-4')" class="w-full p-5 flex justify-between items-center bg-slate-900 hover:bg-slate-800/60 transition text-left">
+          <span class="text-base font-semibold text-blue-400 flex items-center gap-2.5">
+            <i class="fa-solid fa-users text-lg"></i> 4. Referencias Familiares
+          </span>
+          <i id="icon-sec-4" class="fa-solid fa-chevron-down text-slate-400 transition-transform duration-300"></i>
+        </button>
+        <div id="sec-4" class="p-6 pt-0 border-t border-slate-800/60 grid grid-cols-1 md:grid-cols-4 gap-4 mt-4 hidden">
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Nombre del Padre</label>
+            <input type="text" id="nombrePadre" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white text-sm focus:outline-none focus:border-blue-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Nombre de la Madre</label>
+            <input type="text" id="nombreMadre" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white text-sm focus:outline-none focus:border-blue-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Hermanos</label>
+            <input type="text" id="hermanos" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white text-sm focus:outline-none focus:border-blue-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Esposo(a) / Cónyuge</label>
+            <input type="text" id="esposoConyuge" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white text-sm focus:outline-none focus:border-blue-500">
+          </div>
+          <div class="md:col-span-2">
+            <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Hijos</label>
+            <input type="text" id="hijos" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white text-sm focus:outline-none focus:border-blue-500">
+          </div>
+        </div>
+      </div>
+
+      <!-- SECCIÓN 5: EVIDENCIAS Y ENTREVISTA -->
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl shadow-xl overflow-hidden">
+        <button type="button" onclick="toggleSeccion('sec-5')" class="w-full p-5 flex justify-between items-center bg-slate-900 hover:bg-slate-800/60 transition text-left">
+          <span class="text-base font-semibold text-blue-400 flex items-center gap-2.5">
+            <i class="fa-solid fa-box-archive text-lg"></i> 5. Objetos, Indicios y Entrevista
+          </span>
+          <i id="icon-sec-5" class="fa-solid fa-chevron-down text-slate-400 transition-transform duration-300"></i>
+        </button>
+        <div id="sec-5" class="p-6 pt-0 border-t border-slate-800/60 grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 hidden">
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Objeto Asegurado</label>
+            <textarea id="objetoAsegurado" rows="3" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white text-sm focus:outline-none focus:border-blue-500"></textarea>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Indicios</label>
+            <textarea id="indicios" rows="3" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white text-sm focus:outline-none focus:border-blue-500"></textarea>
+          </div>
+          <div class="md:col-span-2">
+            <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Entrevista / Declaración Preliminar</label>
+            <textarea id="entrevista" rows="4" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white text-sm focus:outline-none focus:border-blue-500"></textarea>
+          </div>
+          <div class="md:col-span-2">
+            <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Fotografía del Detenido o Evidencia</label>
+            <input type="file" id="foto" accept="image/*" class="w-full text-sm text-slate-400 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-500 cursor-pointer bg-slate-950 border border-slate-800 rounded-xl">
+          </div>
+        </div>
+      </div>
+
+      <!-- BOTÓN DE ENVÍO FINAL -->
+      <div class="flex justify-end pt-4 pb-12">
+        <button type="submit" id="btnEnviar" class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-semibold px-8 py-3.5 rounded-xl shadow-xl shadow-blue-600/30 transition-all flex items-center gap-3 text-base">
+          <i class="fa-solid fa-cloud-arrow-up text-lg"></i> Guardar Expediente Completo
+        </button>
+      </div>
+
+    </form>
+  </div>
+
+  <script>
+    // ⚠️ REEMPLAZA ESTA URL CON TU URL DE WEBHOOK DE GOOGLE APPS SCRIPT
+    const URL_API_APPS_SCRIPT = "PEGA_AQUÍ_TU_URL_DE_APPS_SCRIPT_TERMINADA_EN_EXEC";
+
+    const municipiosPorEstado = {
+      "AGUASCALIENTES": ["AGUASCALIENTES", "ASIENTOS", "CALVILLO", "COSIO", "EL LLANO", "PABELLON DE ARTEAGA", "RINCON DE ROMOS", "SAN FRANCISCO DE LOS ROMO", "SAN JOSE DE GRACIA", "TEPEZALA"],
+      "BAJA CALIFORNIA": ["ENSENADA", "MEXICALI", "TECATE", "TIJUANA", "PLAYAS DE ROSARITO", "SAN QUINTIN", "SAN FELIPE"],
+      "BAJA CALIFORNIA SUR": ["COMONDU", "MULEGE", "LA PAZ", "LOS CABOS", "LORETO"],
+      "CAMPECHE": ["CALKINI", "CAMPECHE", "CARMEN", "CHAMPOTON", "ESCARCEGA", "HECELCHAKAN", "HOPELCHEN", "PALIZADA", "TENABO", "CANDELARIA"],
+      "CHIAPAS": ["TUXTLA GUTIERREZ", "TAPACHULA", "SAN CRISTOBAL DE LAS CASAS", "COMITAN DE DOMINGUEZ", "PALENQUE", "OCOSINGO", "CHIAPA DE CORZO", "TONALA", "PIJIJIAPAN", "HUIXTLA"],
+      "CHIHUAHUA": ["CHIHUAHUA", "JUAREZ", "DELICIAS", "CUAUHTEMOC", "HIDALGO DEL PARRAL", "OJINAGA", "NUEVO CASAS GRANDES", "CAMARGO"],
+      "CIUDAD DE MEXICO": ["AZCAPOTZALCO", "ALVARO OBREGON", "BENITO JUAREZ", "COYOACAN", "CUAJIMALPA DE MORELOS", "CUAUHTEMOC", "GUSTAVO A. MADERO", "IZTACALCO", "IZTAPALAPA", "MAGDALENA CONTRERAS", "MIGUEL HIDALGO", "MILPA ALTA", "TLAHUAC", "TLALPAN", "VENUSTIANO CARRANZA", "XOCHIMILCO"],
+      "COAHUILA": ["SALTILLO", "TORREON", "MONCLOVA", "PIEDRAS NEGRAS", "ACUÑA", "SABINAS", "SAN PEDRO", "RAMOS ARIZPE"],
+      "COLIMA": ["COLIMA", "MANZANILLO", "TECOMAN", "VILLA DE ALVAREZ", "ARMERIA"],
+      "DURANGO": ["DURANGO", "GOMEZ PALACIO", "LERDO", "SANTIAGO PAPASQUIARO", "NUEVO IDEAL"],
+      "ESTADO DE MEXICO": ["ECATEPEC DE MORELOS", "NEZAHUALCOYOTL", "NAUCALPAN DE JUAREZ", "TOLUCA", "TLALNEPANTLA DE BAZ", "CHIMALHUACAN", "CUAUTITLAN IZCALLI", "IXTAPALUCA", "TECAMAC", "ZUMPANGO", "CHALCO"],
+      "GUANAJUATO": ["LEON", "IRAPUATO", "CELAYA", "SALAMANCA", "GUANAJUATO", "SILAO DE LA VICTORIA", "SAN MIGUEL DE ALLENDE", "DOLORES HIDALGO"],
+      "GUERRERO": ["ACAPULCO DE JUAREZ", "CHILPANCINGO DE LOS BRAVO", "IGUALA DE LA INDEPENDENCIA", "TAXCO DE ALARCON", "ZIHUATANEJO DE AZUETA", "TELOLOAPAN"],
+      "HIDALGO": ["PACHUCA DE SOTO", "TULANCINGO DE BRAVO", "TULA DE ALLENDE", "TIZAYUCA", "HUEJUTLA DE REYES", "ACTOPAN"],
+      "JALISCO": ["GUADALAJARA", "ZAPOPAN", "TLAQUEPAQUE", "TLAJOMULCO DE ZUÑIGA", "EL SALTO", "PUERTO VALLARTA", "LAGOS DE MORENO", "TEPATITLAN DE MORELOS"],
+      "MICHOACAN": ["MORELIA", "URUAPAN", "ZAMORA", "APATZINGAN", "ZITACUARO", "LA PIEDAD", "PATZCUARO"],
+      "MORELOS": ["CUERNAVACA", "JIUTEPEC", "CUAUTLA", "TEMIXCO", "YAUTEPEC", "JOJUTLA"],
+      "NAYARIT": ["TEPIC", "BAHIA DE BANDERAS", "SANTIAGO IXCUINTLA", "COMPOSITELA", "ACAPONETA"],
+      "NUEVO LEON": ["MONTERREY", "GUADALUPE", "APODACA", "SAN NICOLAS DE LOS GARZA", "SAN PEDRO GARZA GARCIA", "SANTA CATARINA", "GENERAL ESCOBEDO", "JUAREZ", "GARCIA", "PESQUERIA", "SANTIAGO", "CADEREYTA JIMENEZ", "LINARES", "SABINAS HIDALGO", "CIENEGA DE FLORES", "EL CARMEN", "SALINAS VICTORIA"],
+      "OAXACA": ["OAXACA DE JUAREZ", "SAN JUAN BAUTISTA TUXTEPEC", "SALINA CRUZ", "JUCHITAN DE ZARAGOZA", "SANTA CRUZ XOXOCOTLAN", "HUAJUAPAN DE LEON"],
+      "PUEBLA": ["PUEBLA", "TEHUACAN", "SAN MARTIN TEXMELUCAN", "ATLIXCO", "SAN ANDRES CHOLULA", "SAN PEDRO CHOLULA", "TEPEACA"],
+      "QUERETARO": ["QUERETARO", "SAN JUAN DEL RIO", "CORREGIDORA", "EL MARQUES", "TEQUISQUIAPAN"],
+      "QUINTANA ROO": ["BENITO JUAREZ (CANCUN)", "OTHON P. BLANCO (CHETUMAL)", "SOLIDARIDAD (PLAYA DEL CARMEN)", "TULUM", "COZUMEL"],
+      "SAN LUIS POTOSI": ["SAN LUIS POTOSI", "SOLEDAD DE GRACIANO SANCHEZ", "CIUDAD VALLES", "RIOVERDE", "MATEHUALA"],
+      "SINALOA": ["CULIACAN", "MAZATLAN", "AHOME (LOS MOCHIS)", "GUASAVE", "NAVOLATO"],
+      "SONORA": ["HERMOSILLO", "CAJEME (CD. OBREGON)", "NOGALES", "SAN LUIS RIO COLORADO", "NAVOJOA", "GUAYMAS"],
+      "TABASCO": ["CENTRO (VILLAHERMOSA)", "CARDENAS", "COMALCALCO", "HUIMANGUILLO", "MACUSPANA"],
+      "TAMAULIPAS": ["REYNOSA", "MATAMOROS", "NUEVO LAREDO", "TAMPICO", "CIUDAD VICTORIA", "RIO BRAVO", "ALTAMIRA"],
+      "TLAXCALA": ["TLAXCALA", "APIZACO", "CHIAUTEMPAN", "HUAMANTLA", "ZACATELCO"],
+      "VERACRUZ": ["VERACRUZ", "XALAPA", "COATZACOALCOS", "CORDOBA", "POZA RICA DE HIDALGO", "ORIZABA", "MINATITLAN", "PANUCO"],
+      "YUCATAN": ["MERIDA", "KANASIN", "VALLADOLID", "PROGRESO", "TIZIMIN"],
+      "ZACATECAS": ["ZACATECAS", "GUADALUPE", "FRESNILLO", "JEREZ", "RIO GRANDE", "SOMBRERETE"]
+    };
+
+    function calcularEdad() {
+      const fechaNacInput = document.getElementById('fechaNacimiento').value;
+      const campoEdad = document.getElementById('edad');
+      if (!fechaNacInput) { campoEdad.value = ''; return; }
+      const hoy = new Date();
+      const fechaNac = new Date(fechaNacInput);
+      let edad = hoy.getFullYear() - fechaNac.getFullYear();
+      const mesDiff = hoy.getMonth() - fechaNac.getMonth();
+      if (mesDiff < 0 || (mesDiff === 0 && hoy.getDate() < fechaNac.getDate())) { edad--; }
+      campoEdad.value = edad >= 0 ? edad + " AÑOS" : "0 AÑOS";
+    }
+
+    function gestionarOtroDelito() {
+      const select = document.getElementById('motivoDetencionSelect');
+      const otroInput = document.getElementById('motivoDetencionOtro');
+      if (select.value === 'OTRO') {
+        otroInput.classList.remove('hidden');
+        otroInput.required = true;
+      } else {
+        otroInput.classList.add('hidden');
+        otroInput.required = false;
+        otroInput.value = '';
+      }
+    }
+
+    function actualizarMunicipios() {
+      const selectEstado = document.getElementById('estado');
+      const selectMunicipio = document.getElementById('municipio');
+      selectMunicipio.innerHTML = '';
+      const lista = municipiosPorEstado[selectEstado.value] || ["OTRO"];
+      lista.forEach(mun => {
+        const option = document.createElement('option');
+        option.value = mun;
+        option.textContent = mun;
+        selectMunicipio.appendChild(option);
+      });
+    }
+
+    function autocompletarFechaHoraActual() {
+      const hoy = new Date();
+      const yyyy = hoy.getFullYear();
+      const mm = String(hoy.getMonth() + 1).padStart(2, '0');
+      const dd = String(hoy.getDate()).padStart(2, '0');
+      const hh = String(hoy.getHours()).padStart(2, '0');
+      const min = String(hoy.getMinutes()).padStart(2, '0');
+      document.getElementById('fechaDetencion').value = `${yyyy}-${mm}-${dd}`;
+      document.getElementById('horaDetencion').value = `${hh}:${min}`;
+    }
+
+    window.onload = function() {
+      actualizarMunicipios();
+      autocompletarFechaHoraActual();
+    };
+
+    function toggleSeccion(id) {
+      const contenido = document.getElementById(id);
+      const icono = document.getElementById('icon-' + id);
+      if (contenido.classList.contains('hidden')) {
+        contenido.classList.remove('hidden');
+        icono.classList.add('rotate-180');
+      } else {
+        contenido.classList.add('hidden');
+        icono.classList.remove('rotate-180');
+      }
+    }
+
+    function resetearFormulario() {
+      if(confirm("¿Limpiar formulario?")) {
+        document.getElementById('registroForm').reset();
+        actualizarMunicipios();
+        autocompletarFechaHoraActual();
+        gestionarOtroDelito();
+      }
+    }
+
+    function enviarDatos(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btnEnviar');
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Guardando...';
+
+      const fotoFile = document.getElementById('foto').files[0];
+      if (fotoFile) {
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+          enviarPeticionServidor({ fotoBase64: evt.target.result, fotoNombre: fotoFile.name, fotoType: fotoFile.type });
+        };
+        reader.readAsDataURL(fotoFile);
+      } else {
+        enviarPeticionServidor({});
+      }
+    }
+
+    function enviarPeticionServidor(fotoData) {
+      const motivoSelect = document.getElementById('motivoDetencionSelect').value;
+      const motivoOtro = document.getElementById('motivoDetencionOtro').value;
+
+      const payload = {
+        motivoDetencion: motivoSelect === 'OTRO' ? motivoOtro : motivoSelect,
+        folio: document.getElementById('folio').value,
+        email: document.getElementById('email').value,
+        fechaDetencion: document.getElementById('fechaDetencion').value,
+        horaDetencion: document.getElementById('horaDetencion').value,
+        lugarDetencion: document.getElementById('lugarDetencion').value,
+        nombre: document.getElementById('nombre').value,
+        apellidoPaterno: document.getElementById('apellidoPaterno').value,
+        apellidoMaterno: document.getElementById('apellidoMaterno').value,
+        alias: document.getElementById('alias').value,
+        fechaNacimiento: document.getElementById('fechaNacimiento').value,
+        curp: document.getElementById('curp').value,
+        edad: document.getElementById('edad').value,
+        estadoCivil: document.getElementById('estadoCivil').value,
+        ocupacion: document.getElementById('ocupacion').value,
+        gradoEstudios: document.getElementById('gradoEstudios').value,
+        originario: document.getElementById('originario').value,
+        telefono: document.getElementById('telefono').value,
+        calle: document.getElementById('calle').value,
+        numero: document.getElementById('numero').value,
+        entreCalle: document.getElementById('entreCalle').value,
+        colonia: document.getElementById('colonia').value,
+        municipio: document.getElementById('municipio').value,
+        estado: document.getElementById('estado').value,
+        codigoPostal: document.getElementById('codigoPostal').value,
+        nombrePadre: document.getElementById('nombrePadre').value,
+        nombreMadre: document.getElementById('nombreMadre').value,
+        hermanos: document.getElementById('hermanos').value,
+        esposoConyuge: document.getElementById('esposoConyuge').value,
+        hijos: document.getElementById('hijos').value,
+        objetoAsegurado: document.getElementById('objetoAsegurado').value,
+        indicios: document.getElementById('indicios').value,
+        entrevista: document.getElementById('entrevista').value,
+        ...fotoData
+      };
+
+      fetch(URL_API_APPS_SCRIPT, {
+        method: 'POST',
+        mode: 'no-cors', // Evita problemas de bloqueo CORS en GitHub Pages
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+      .then(() => {
+        alert("¡Expediente guardado exitosamente!");
+        document.getElementById('registroForm').reset();
+        actualizarMunicipios();
+        autocompletarFechaHoraActual();
+        gestionarOtroDelito();
+        restaurarBoton();
+      })
+      .catch(err => {
+        alert("Error de conexión: " + err);
+        restaurarBoton();
+      });
+    }
+
+    function restaurarBoton() {
+      const btn = document.getElementById('btnEnviar');
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up text-lg"></i> Guardar Expediente Completo';
+    }
+  </script>
+</body>
+</html>
